@@ -145,12 +145,13 @@ export default {
             this.GetShopSpecifications()
         },
         async handleClose(tag){
-            const result = await this.$prompt('是否删除该规格', '提示', {
+            const { tabsActivity: specId } = this.$data
+            const confirm = await this.$confirm(`此操作将永久删除该文件, 是否继续?-${specId}`, '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
+                type: 'warning'
             }).catch(() => {})
-            if (!result) return
-
+            if (!confirm) return
             alert("敬请期待")
         }
     }
