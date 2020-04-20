@@ -144,7 +144,7 @@ export default {
             await this.$api.AddShopSpecifications(data)
             this.GetShopSpecifications()
         },
-        handleClose(tag){
+        async handleClose(tag){
             const result = await this.$prompt('是否删除该规格', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
