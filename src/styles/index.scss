@@ -61,9 +61,16 @@ div:focus {
 
 // main-container global css
 .app-container {
-  padding: 20px;
+    padding: 20px;
+    .table-wrapper{
+        margin-top: 20px;
+    }
 }
 
 .red{
     color: red;
+}
+
+i{
+    font-style: normal;   
 }

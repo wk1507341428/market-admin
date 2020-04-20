@@ -9,7 +9,7 @@ module.exports = {
     node: true,
     es6: true,
   },
-  extends: ['plugin:vue/recommended', 'eslint:recommended'],
+  extends: ['plugin:vue/essential', 'eslint:recommended'],
 
   // add your custom rules here
   //it is base on https://github.com/vuejs/eslint-config-vue
@@ -54,7 +54,14 @@ module.exports = {
     }],
     'handle-callback-err': [2, '^(err|error)$'],
     'indent': [2, 4, {
-      'SwitchCase': 1
+      'SwitchCase': 2
+    }],
+    "vue/html-indent": ["error", 4, {
+        "attribute": 1,
+        "baseIndent": 1,
+        "closeBracket": 0,
+        "alignAttributesVertically": true,
+        "ignores": []
     }],
     'jsx-quotes': [2, 'prefer-single'],
     'key-spacing': [2, {
@@ -142,10 +149,6 @@ module.exports = {
     }],
     'no-unreachable': 2,
     'no-unsafe-finally': 2,
-    'no-unused-vars': [2, {
-      'vars': 'all',
-      'args': 'none'
-    }],
     'no-useless-call': 2,
     'no-useless-computed-key': 2,
     'no-useless-constructor': 2,

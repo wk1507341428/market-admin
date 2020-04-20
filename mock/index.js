@@ -6,7 +6,7 @@ import table from './table'
 
 const mocks = [
   ...user,
-  ...table
+//   ...table
 ]
 
 // for front mock
@@ -28,7 +28,8 @@ export function mockXHR() {
   }
 
   function XHR2ExpressReqWrap(respond) {
-    return function(options) {
+      return function(options) {
+        console.log(options,"optionsoptionsoptionsoptionsoptions")
       let result = null
       if (respond instanceof Function) {
         const { body, type, url } = options

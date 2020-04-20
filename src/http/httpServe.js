@@ -3,10 +3,10 @@ import axios from 'axios'
 const GET = 'GET'
 const POST = 'POST'
 
-const loadCount = 0
+// const loadCount = 0
 
 var server = axios.create({
-    timeout: 8000
+    // timeout: 8000
 })
 server.interceptors.request.use((config) => {
     return config
@@ -158,9 +158,9 @@ class Call {
                 this.complete && typeof this.complete === 'function' && this.complete(response)
 
                 const { success } = response
-                if ( success ) {
+                if (success) {
                     resolve(response)
-                }else{
+                } else {
                     if (!this.server_error && typeof this.onServerError === 'function') {
                         this.onServerError(response)
                     } else {

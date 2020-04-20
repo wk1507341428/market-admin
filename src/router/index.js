@@ -60,7 +60,7 @@ export const constantRoutes = [
         component: Layout,
         name: '/market',
         meta: {
-            title: '商品管理',
+            title: '商城管理',
             icon: 'nested'
         },
         children: [
@@ -71,10 +71,16 @@ export const constantRoutes = [
                 meta: { title: '商品分类', icon: 'dashboard' }
             },
             {
-                path: 'tree',
-                name: 'Tree',
-                component: () => import('@/views/tree/index'),
-                meta: { title: '规格尺寸', icon: 'tree' }
+                path: 'shopGoods',
+                name: 'shopGoods',
+                component: () => import('@/views/market/shopGoods'),
+                meta: { title: '商品管理', icon: 'dashboard' }
+            },
+            {
+                path: 'shopProperty',
+                name: 'shopProperty',
+                component: () => import('@/views/market/shopProperty'),
+                meta: { title: '规格尺寸', icon: 'dashboard' }
             }
         ]
     },

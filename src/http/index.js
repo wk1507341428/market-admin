@@ -1,6 +1,6 @@
 import HttpServe from './httpServe'
-import { Loading } from 'element-ui'
-import { Notification } from 'element-ui';
+import { Loading, Notification } from 'element-ui'
+// import qs from 'qs'
 
 let loadingInstance = null
 
@@ -12,7 +12,7 @@ const http = new HttpServe({
         Notification.error({
             title: `错误提示-${status}`,
             message: message
-        });
+        })
         return
     },
 
@@ -23,18 +23,16 @@ const http = new HttpServe({
         Notification.error({
             title: `错误提示-${errCode}`,
             message: errMessage
-        });
+        })
         return
     },
 
     defaultLoading: {
         show() {
-            console.log('开始～')
             loadingInstance = Loading.service({ fullscreen: true })
         },
         hide() {
-            loadingInstance.close();
-            console.log('结束～')
+            loadingInstance.close()
         }
     }
 
@@ -44,8 +42,8 @@ export default {
 
     /**
      * @description: 获取类目列表
-     * @param {type} 
-     * @return: 
+     * @param {type}
+     * @return:
      */
     GetGategoryList(data = 'c123123123') {
         return http.get(`/market/mall/product/v1/categories/${data}`).withLoading().exec()
@@ -53,11 +51,67 @@ export default {
 
     /**
      * @description: 新增类目列表
-     * @param {type} 
-     * @return: 
+     * @param {type}
+     * @return:
      */
-    AddGategoryList(data){
-        return http.post(`/market/mall/product/v1/category`,data).withLoading().exec()
+    AddGategoryList(data) {
+        return http.post(`/market/mall/product/v1/category`, data).withLoading().exec()
+    },
+
+    /**
+     * @description: 修改类别信息
+     * @param {type}
+     * @return:
+     */
+    SetCategory(data) {
+        return http.post(`/market/mall/product/v1/categories/category`, data).withLoading().exec()
+    },
+
+    /**
+     * @description: 文件上传接口
+     * @param {type}
+     * @return:
+     */
+    UploadFile(data) {
+        return http.post(`/market/mall/file/v1/`, data).setHeaders({
+            'Content-Type': 'multipart/form-data'
+        }).withLoading().exec()
+    },
+
+    /**
+     * @description: 查询商家所有的规格
+     * @param {type}
+     * @return:
+     */
+    GetShopSpecifications(params = 'c123123123') {
+        return http.get(`/market/mall/product/v1/specs/${params}`).withLoading().exec()
+    },
+
+    /**
+     * @description: 新增规格尺寸
+     * @param {type}
+     * @return:
+     */
+    AddShopSpecifications(data) {
+        return http.post(`/market/mall/product/v1/spec`, data).withLoading().exec()
+    },
+
+    /**
+     * @description: 列出规格下面所有的属性
+     * @param {type}
+     * @return:
+     */
+    GetShopSpecListBySpecId(params) {
+        return http.get(`/market/mall/product/v1/property/${params}`).withLoading().exec()
+    },
+
+    /**
+     * @description: 新增规格属性
+     * @param {type}
+     * @return:
+     */
+    AddShopSpecProperty(data) {
+        return http.post(`/market/mall/product/v1/property`, data).withLoading().exec()
     }
 
 }
