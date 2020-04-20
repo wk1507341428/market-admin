@@ -126,6 +126,7 @@ export default {
                 type: 'warning'
             }).catch(() => {})
             if (!confirm) return
+            alert("敬请期待")
         },
         // 增加规格
         async HandleAddTabs(){
@@ -144,7 +145,13 @@ export default {
             this.GetShopSpecifications()
         },
         handleClose(tag){
-            console.log(tag)
+            const result = await this.$prompt('是否删除该规格', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+            }).catch(() => {})
+            if (!result) return
+
+            alert("敬请期待")
         }
     }
 }
