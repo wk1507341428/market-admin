@@ -112,6 +112,49 @@ export default {
      */
     AddShopSpecProperty(data) {
         return http.post(`/market/mall/product/v1/property`, data).withLoading().exec()
-    }
+    },
 
+    /**
+     * @description: 图片验证码
+     * @param {type} 
+     * @return: 
+     */    
+
+    GetImgVerifyCode(){
+       return http.post(`/market/mall/backend/v1/captcha`).withLoading().exec()
+    },
+
+    /**
+     * @description: 获取手机验证码
+     * @param {type} 
+     * @return: 
+     */    
+    SendMobileSms(phone){
+        return http.post(`/market/mall/sms/v1?phone=${phone}`).withLoading().exec()
+    },
+
+    /**
+     * @description: 手机号注册商户
+     * @param {type} 
+     * @return: 
+     */    
+    register(data, captha){
+        return http.post(`/market/mall/backend/v1/merchant/register`, data)
+        .withLoading()
+        .setHeaders({
+            captha
+        })
+        .exec()
+    },
+
+    /**
+     * @description: 修改登录密码/
+     * @param {type} 
+     * @return: 
+     */    
+    SetUserPassword(data, captha){
+        return http.post(`/market/mall/merchant/v1/password`, data).withLoading().setHeaders({
+            captha
+        }).exec()
+    }
 }
