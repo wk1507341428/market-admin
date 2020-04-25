@@ -201,7 +201,7 @@ export default {
             // 缩略图 -- 开始
             dialogImageUrlAvatar: {
                 picFUn: 0,
-                picUrl: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg'
+                picUrl: ''
             },
             dialogVisibleAvatar: false,
             disabled: false,
@@ -318,7 +318,7 @@ export default {
             console.log(val)
         },
         // 规格属性 -- 结束
-        handleSubmit() {
+        async handleSubmit() {
             const { filesList, dialogImageUrlAvatar, goodsCheckedProperty, shopSpecList } = this.$data
             const { categoryCode, soldPrice, stock, productName, productDesc, price } = this.ruleForm
             // 收集数据阶段
@@ -355,7 +355,9 @@ export default {
             const params = Object.assign(defaultData, { specs, pics })
             console.log(defaultData, 'defaultData')
 
-            this.$api.AddGoods(params)
+            await this.$api.AddGoods(params)
+            this.$notify({ title: '添加成功', message: '这是一条成功的提示消息', type: 'success' })
+            this.$router.push({ path: '/market/shopGoods' })
         }
     },
     components: {
