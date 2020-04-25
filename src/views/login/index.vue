@@ -44,8 +44,7 @@
             <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
 
             <div class="tips">
-                <span style="margin-right:20px;">username: admin</span>
-                <span> password: any</span>
+                <router-link to="/register" style="margin-right:20px;">没有账号？ 立即注册</router-link>
             </div>
 
         </el-form>
@@ -59,7 +58,7 @@ export default {
     name: 'Login',
     data() {
         const validateUsername = (rule, value, callback) => {
-            if (!validUsername(value)) {
+            if (!validUsername(value) && false) {
                 callback(new Error('Please enter the correct user name'))
             } else {
                 callback()
@@ -74,8 +73,8 @@ export default {
         }
         return {
             loginForm: {
-                username: 'admin',
-                password: '111111'
+                username: '14455556666',
+                password: 'abc123'
             },
             loginRules: {
                 username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -112,8 +111,13 @@ export default {
                     this.$store.dispatch('user/login', this.loginForm).then(() => {
                         this.$router.push({ path: this.redirect || '/' })
                         this.loading = false
-                    }).catch(() => {
+                    }).catch((error) => {
+                        const { errMessage, errCode } = error
                         this.loading = false
+                        this.$notify.error({
+                            title: `错误提示-${errCode}`,
+                            message: errMessage
+                        })
                     })
                 } else {
                     console.log('error submit!!')

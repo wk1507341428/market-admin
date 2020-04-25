@@ -39,7 +39,7 @@
             </el-form-item>
 
             <!-- 图形验证码 -->
-            <el-form-item prop="verify-image">
+            <!-- <el-form-item prop="verify-image">
                 <span class="svg-container">
                     <svg-icon icon-class="password" />
                 </span>
@@ -52,12 +52,12 @@
                     auto-complete="on"
                 />
                 <img class="image" :src="`data:image/png;base64,${ImageCodeUrl}`" width="80" height="40" alt="">
-            </el-form-item>
+            </el-form-item> -->
 
             <el-button :loading="false" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleRegister">注册</el-button>
 
             <div class="tips">
-                <span>欢迎来到诚为</span>
+                <router-link to="/login">已经有账号了，去登陆</router-link>
             </div>
 
         </el-form>
@@ -66,64 +66,61 @@
 
 <script>
 export default {
-    data(){
-        return{
-            ImageCodeUrl: "",       // 图片验证码地址
-            ImageCaptha: "",        // 用户填的用户验证码
-            verifyText: "获取验证码",
-            form:{
-                tel: "",    // 手机号
-                smsCode: "",    // 验证码
+    data() {
+        return {
+            ImageCodeUrl: '', // 图片验证码地址
+            ImageCaptha: '', // 用户填的用户验证码
+            verifyText: '获取验证码',
+            form: {
+                tel: '', // 手机号
+                smsCode: '' // 验证码
             }
         }
     },
-    mounted(){
+    mounted() {
         this.init()
     },
-    methods:{
-        init(){
+    methods: {
+        init() {
             this.GetImgVerifyCode()
         },
-        async GetImgVerifyCode(){
+        async GetImgVerifyCode() {
             const result = await this.$api.GetImgVerifyCode()
             this.ImageCodeUrl = result.data.image
 
             console.log(window.atob(result.data.code))
         },
         // 发送验证码
-        async SendMobileSms(){
-            if( this.verifyText !== '获取验证码' ) return
-            this.verifyText = "获取中..."
+        async SendMobileSms() {
+            if (this.verifyText !== '获取验证码') return
+            this.verifyText = '获取中...'
             const { tel } = this.form
             await this.$api.SendMobileSms(tel)
             let countDown = 60
-            let auto = setInterval(() => {
-                countDown --
+            const auto = setInterval(() => {
+                countDown--
                 this.verifyText = `${countDown}秒`
-                if(countDown <= 0){
+                if (countDown <= 0) {
                     clearInterval(auto)
                     this.verifyText = '获取验证码'
                 }
-            }, 1000);
+            }, 1000)
         },
         // 注册接口
-        async handleRegister(){
+        async handleRegister() {
             const { tel, smsCode } = this.form
             const { ImageCaptha, ImageCodeUrl } = this.$data
-            await this.$api.register({
+            const result = await this.$api.register({
                 phone: tel,
-                smsCode,
-                ImageCaptha
-            }, ImageCodeUrl)
-            this.$notify({ title: '成功', message: '注册成功', type: 'success' })
-            this.$router.push({ path:"/login" })
-
-            // await this.$api.SetUserPassword({
-            //     password: tel,
-            //     userName: smsCode,
-            //     ImageCaptha,
-            //     customerId: "c123123123"
-            // }, ImageCodeUrl)
+                smsCode
+            })
+            const { phone, password } = result.data
+            const confirm = await this.$alert(`注册成功,您的账号是：${phone}，您的密码是：${password}`, '提示', {
+                confirmButtonText: '确定',
+                type: 'warning'
+            })
+            if (!confirm) return
+            this.$router.push({ path: '/login' })
         }
     }
 }

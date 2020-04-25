@@ -74,7 +74,7 @@
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="resetForm">取 消</el-button>
-                <el-button type="primary" @click="SubmitGategoryList">确 定</el-button>
+                <el-button type="primary" @click="SubmitCategoryList">确 定</el-button>
             </div>
         </el-dialog>
     </div>
@@ -137,15 +137,15 @@ export default {
             this.form.fileList.push({ url: response.data })
         },
         init() {
-            this.GetGategoryList()
+            this.GetCategoryList()
         },
-        async GetGategoryList() {
-            const response = await this.$api.GetGategoryList()
+        async GetCategoryList() {
+            const response = await this.$api.GetCategoryList()
             const { data } = response
             this.tableData = data
         },
         // 表单提交
-        SubmitGategoryList() {
+        SubmitCategoryList() {
             console.log(this.form, 'this.form')
             this.$refs['ruleForm'].validate(async(valid) => {
                 if (!valid) return
@@ -155,30 +155,30 @@ export default {
                 }
 
                 if (ifEdit) {
-                    this.editGategory()
+                    this.editCategory()
                 } else {
-                    this.AddGategoryList()
+                    this.AddCategoryList()
                 }
                 // 关闭弹窗
                 this.resetForm()
                 // 重新请求列表
                 setTimeout(() => {
-                    this.GetGategoryList()
+                    this.GetCategoryList()
                 }, 100)
             })
         },
         // 新增分类
-        async AddGategoryList() {
+        async AddCategoryList() {
             const { categoryName, active, fileList } = this.form
-            await this.$api.AddGategoryList({
+            await this.$api.AddCategoryList({
                 categoryName,
-                merchantId: 'c123123123',
+                merchantId: this.$store.getters.customerId,
                 active: active,
                 categoryPic: fileList[0].url
             })
         },
         // 修改分类
-        async editGategory() {
+        async editCategory() {
             const { active, categoryCode, categoryName, merchantId, id, fileList } = this.form
             this.$api.SetCategory({
                 active,
@@ -213,7 +213,7 @@ export default {
             const response = await this.$api.SetCategory(Object.assign(row, { active: disActive }))
             this.$notify({ title: '删除成功', message: response.errMessage || '这是一条成功的提示消息', type: 'success' })
             // 重新请求列表
-            this.GetGategoryList()
+            this.GetCategoryList()
         },
         // 添加分类
         handleAddCate() {

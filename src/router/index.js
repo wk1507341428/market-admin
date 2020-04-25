@@ -73,13 +73,20 @@ export const constantRoutes = [
                 path: 'category',
                 name: 'category',
                 component: () => import('@/views/market/category'),
-                meta: { title: '商品分类', icon: 'dashboard' }
+                meta: { title: '商品分类', icon: 'dashboard' }
             },
             {
                 path: 'shopGoods',
                 name: 'shopGoods',
                 component: () => import('@/views/market/shopGoods'),
-                meta: { title: '商品管理', icon: 'dashboard' }
+                meta: { title: '商品管理', icon: 'dashboard' }
+            },
+            {
+                path: 'setShopGoods',
+                name: 'setShopGoods',
+                component: () => import('@/views/market/setShopGoods'),
+                meta: { title: '商品管理', icon: 'dashboard' },
+                hidden: true
             },
             {
                 path: 'shopProperty',

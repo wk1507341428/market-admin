@@ -7,9 +7,12 @@
         <!-- 表格主体 -->
         <div class="table-wrapper">
             <!-- tab栏目 -->
-            <el-tabs closable 
-                @tab-remove="removeTab" 
-                v-model="tabsActivity" @tab-click="handleClick" type="border-card">
+            <el-tabs
+                closable
+                @tab-remove="removeTab"
+                v-model="tabsActivity"
+                @tab-click="handleClick"
+                type="border-card">
                 <el-tab-pane
                     v-for="(item,i) in tabs"
                     :key="i"
@@ -32,9 +35,9 @@
                     </div>
                     <div class="tag-wrap">
                         <el-tag
-                            v-for="tag in tags"
-                            :key="tag.id"
-                            @close="handleClose(tag)"
+                            v-for="(tag,index) in tags"
+                            :key="index"
+                            @close="handleCloseTag(tag)"
                             closable>
                             {{tag.propertyName}}
                         </el-tag>
@@ -84,6 +87,7 @@ export default {
                 item.id = item.id.toString()
             })
             this.tabs = response.data
+            if (response.data.length === 0) return
             this.tabsActivity = response.data[0].id
             // 获取第一个规格下的熟悉
             this.GetShopSpecListBySpecId(this.tabsActivity)
@@ -99,12 +103,14 @@ export default {
                 // this.$refs.saveTagInput.$refs.input.focus()
             })
         },
+        // 新增规格下的属性
         async handleInputConfirm() {
             const { inputValue, tabsActivity: specId } = this.$data
             // 这里要发送请求
             const options = {
                 active: '1',
                 propertyName: inputValue,
+                spcName: inputValue,
                 specId
             }
             if (!inputValue.trim()) {
@@ -118,41 +124,45 @@ export default {
             // 获取当前规格下的属性
             this.GetShopSpecListBySpecId(specId)
         },
-        async removeTab(){
-            const { tabsActivity: specId } = this.$data
-            const confirm = await this.$confirm(`此操作将永久删除该文件, 是否继续?-${specId}`, '提示', {
+        async removeTab(id) {
+            const confirm = await this.$confirm(`此操作将永久删除该文件, 是否继续?`, '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).catch(() => {})
             if (!confirm) return
-            alert("敬请期待")
+            await this.$api.DeleteSpec({ id })
+            this.GetShopSpecifications()
         },
         // 增加规格
-        async HandleAddTabs(){
+        async HandleAddTabs() {
             const result = await this.$prompt('增加规格', '提示', {
                 confirmButtonText: '确定',
-                cancelButtonText: '取消',
+                cancelButtonText: '取消'
             }).catch(() => {})
             if (!result) return
             const { value } = result
             const data = {
                 active: '1',
-                merchantId: 'c123123123',
+                merchantId: this.$store.getters.customerId,
                 spcName: value
             }
             await this.$api.AddShopSpecifications(data)
             this.GetShopSpecifications()
         },
-        async handleClose(tag){
+        async handleCloseTag(tag) {
             const { tabsActivity: specId } = this.$data
-            const confirm = await this.$confirm(`此操作将永久删除该文件, 是否继续?-${specId}`, '提示', {
+            const confirm = await this.$confirm(`此操作将永久删除该文件, 是否继续?`, '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).catch(() => {})
             if (!confirm) return
-            alert("敬请期待")
+            await this.$api.DeleteProperty(tag.id)
+            setTimeout(() => {
+                // 获取当前规格下的属性
+                this.GetShopSpecListBySpecId(specId)
+            }, 100)
         }
     }
 }
@@ -160,9 +170,10 @@ export default {
 
 <style lang="scss" scoped>
 .tag-wrap{
-    padding: 20px 20px 20px 0;
+    padding: 0px 20px 20px 0;
     & /deep/ .el-tag{
         margin-right: 20px;
+        margin-top: 20px;
     }
 }
 </style>
