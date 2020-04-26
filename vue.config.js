@@ -41,8 +41,8 @@ module.exports = {
     proxy: {
         "/market": {
             // 测试环境
-            target: 'https://www.sjzju.cn',
-            // target: 'http://192.168.60.106:8088',
+            // target: 'https://www.sjzju.cn',
+            target: 'http://112.124.97.180:8088',
             changeOrigin: true,  //是否跨域
             pathRewrite: {
               '^/market': ''   //需要rewrite重写的,

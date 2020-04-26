@@ -131,7 +131,7 @@ export default {
      * @return:
      */
     GetImgVerifyCode() {
-        return http.post(`/market/mall/backend/v1/captcha`).withLoading().exec()
+        return http.post(`/market/mall/backend/v1/captcha`).exec()
     },
 
     /**
@@ -141,6 +141,15 @@ export default {
      */
     SendMobileSms(phone) {
         return http.post(`/market/mall/sms/v1?phone=${phone}`).withLoading().exec()
+    },
+
+    /**
+     * @description: 注册的手机验证码
+     * @param {type}
+     * @return:
+     */
+    SendMobileSmsByRegister(mobile) {
+        return http.get(`/market/mall/backend/v1/register/sms/${mobile}`).withLoading().exec()
     },
 
     /**

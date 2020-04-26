@@ -39,7 +39,7 @@
             </el-form-item>
 
             <!-- 图形验证码 -->
-            <!-- <el-form-item prop="verify-image">
+            <el-form-item prop="verify-image">
                 <span class="svg-container">
                     <svg-icon icon-class="password" />
                 </span>
@@ -51,13 +51,13 @@
                     tabindex="2"
                     auto-complete="on"
                 />
-                <img class="image" :src="`data:image/png;base64,${ImageCodeUrl}`" width="80" height="40" alt="">
-            </el-form-item> -->
+                <img class="image" @click="GetImgVerifyCode" :src="`data:image/png;base64,${ImageCodeUrl}`" width="80" height="40" alt="">
+            </el-form-item>
 
             <el-button :loading="false" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleRegister">注册</el-button>
 
             <div class="tips">
-                <router-link to="/login">已经有账号了，去登陆</router-link>
+                <router-link to="/login">已经有账号了？，去登陆吧</router-link>
             </div>
 
         </el-form>
@@ -70,6 +70,7 @@ export default {
         return {
             ImageCodeUrl: '', // 图片验证码地址
             ImageCaptha: '', // 用户填的用户验证码
+            ImageCode: '', // 这个应该是不需要的 暂时前端验证吧
             verifyText: '获取验证码',
             form: {
                 tel: '', // 手机号
@@ -87,7 +88,7 @@ export default {
         async GetImgVerifyCode() {
             const result = await this.$api.GetImgVerifyCode()
             this.ImageCodeUrl = result.data.image
-
+            this.ImageCode = window.atob(result.data.code)
             console.log(window.atob(result.data.code))
         },
         // 发送验证码
@@ -95,7 +96,7 @@ export default {
             if (this.verifyText !== '获取验证码') return
             this.verifyText = '获取中...'
             const { tel } = this.form
-            await this.$api.SendMobileSms(tel)
+            await this.$api.SendMobileSmsByRegister(tel)
             let countDown = 60
             const auto = setInterval(() => {
                 countDown--
@@ -109,7 +110,21 @@ export default {
         // 注册接口
         async handleRegister() {
             const { tel, smsCode } = this.form
-            const { ImageCaptha, ImageCodeUrl } = this.$data
+            const { ImageCaptha, ImageCode } = this.$data
+            if (!tel || !smsCode || !ImageCaptha) {
+                this.$notify.error({
+                    title: `错误提示`,
+                    message: '请输入正确信息'
+                })
+                return
+            }
+            if (ImageCaptha !== ImageCode) {
+                this.$notify.error({
+                    title: `错误提示`,
+                    message: '请输入正确的验证码'
+                })
+                return
+            }
             const result = await this.$api.register({
                 phone: tel,
                 smsCode
