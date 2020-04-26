@@ -340,20 +340,19 @@ export default {
             const pics = [...filesList, dialogImageUrlAvatar]
 
             // 这里做规格处理
-            const specs = []
-            Array.isArray(shopSpecList) && shopSpecList.forEach(item => {
-                Array.isArray(goodsCheckedProperty) && goodsCheckedProperty.forEach(id => {
-                    Array.isArray(item.childrens) && item.childrens.forEach(property => {
-                        if (id == property.id) {
-                            specs.push(property)
-                        }
-                    })
-                })
-            })
+            const specs = goodsCheckedProperty
+            // Array.isArray(shopSpecList) && shopSpecList.forEach(item => {
+            //     Array.isArray(goodsCheckedProperty) && goodsCheckedProperty.forEach(id => {
+            //         Array.isArray(item.childrens) && item.childrens.forEach(property => {
+            //             if (id == property.id) {
+            //                 specs.push(property)
+            //             }
+            //         })
+            //     })
+            // })
 
             // 组装数据
             const params = Object.assign(defaultData, { specs, pics })
-            console.log(defaultData, 'defaultData')
 
             await this.$api.AddGoods(params)
             this.$notify({ title: '添加成功', message: '这是一条成功的提示消息', type: 'success' })
