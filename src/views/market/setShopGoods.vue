@@ -77,47 +77,20 @@
             <el-row>
                 <el-col :span="18">
                     <el-form-item label="缩略图上传">
-                        <el-upload
-                            action="#"
-                            list-type="picture-card"
-                            :http-request="handleUploadAvatarImage">
-                            <i slot="default" class="el-icon-plus"></i>
-                            <div slot="file" slot-scope="{file}">
-                                <img
-                                    class="el-upload-list__item-thumbnail"
-                                    :src="dialogImageUrlAvatar.picUrl"
-                                    alt=""
-                                >
-                                <span class="el-upload-list__item-actions">
-                                    <span
-                                        class="el-upload-list__item-preview"
-                                        @click="handlePictureCardPreview(file)"
-                                    >
-                                        <i class="el-icon-zoom-in"></i>
-                                    </span>
-                                    <span
-                                        v-if="!disabled"
-                                        class="el-upload-list__item-delete"
-                                        @click="handleRemoveAvatar(file)"
-                                    >
-                                        <i class="el-icon-delete"></i>
-                                    </span>
-                                </span>
-                            </div>
-                        </el-upload>
-                        <el-dialog :visible.sync="dialogVisibleAvatar">
-                            <img width="100%" :src="dialogImageUrlAvatar.picUrl" alt="">
-                        </el-dialog>
+                        <UploadImage color="#1890ff" class="editor-upload-btn" @successCBK="imageSuccessByCover" />
+                        <FileList style="marginTop:20px" @delCallBack="handleDelCaverCallBack" :filelist="dialogImageUrlAvatar"></FileList>
                     </el-form-item>
                 </el-col>
-                <el-col :span="6"></el-col>
+                <el-col :span="6">
+
+                </el-col>
             </el-row>
             <!-- 产品规格 -->
             <el-row>
                 <el-col :span="24">
                     <el-form-item label="产品规格">
                         <el-collapse v-model="activeNames">
-                            <el-collapse-item v-for="item in shopSpecList" :key="item.id"  :title="item.spcName" :name="item.id">
+                            <el-collapse-item v-for="item in shopSpecList" :key="item.id"  :title="item.specName" :name="item.id">
                                 <div v-if="Array.isArray(item.childrens) && item.childrens.length > 0" class="wrapper">
                                     <el-checkbox-group v-model="goodsCheckedProperty">
                                         <el-checkbox
@@ -159,6 +132,8 @@
 
 <script>
 import Tinymce from '@/components/Tinymce'
+import UploadImage from '@/components/UploadImage/UploadImage'
+import FileList from '@/components/UploadImage/fileList'
 export default {
     data() {
         return {
@@ -198,14 +173,6 @@ export default {
                 { picFUn: 1, url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg' },
                 { picFUn: 1, url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg' }
             ], // swiper image list
-            // 缩略图 -- 开始
-            dialogImageUrlAvatar: {
-                picFUn: 0,
-                picUrl: ''
-            },
-            dialogVisibleAvatar: false,
-            disabled: false,
-            // 缩略图 -- 结束
 
             /** -----详情页详细介绍图 开始------ */
 
@@ -215,7 +182,8 @@ export default {
             shopSpecList: [], // 商品规格列表
             goodsCheckedProperty: [], // 商品已经选择的属性
             // 规格属性 -- 结束
-            content: '这个富文本暂时没什么用'
+            content: '这个富文本暂时没什么用',
+            dialogImageUrlAvatar: []
         }
     },
     mounted() {
@@ -266,20 +234,6 @@ export default {
         uploadSuccess(res, file) {
             console.log(this.filesList, 'uploadSuccessuploadSuccess', res, file)
         },
-        // 缩略图上传 -- 开始
-        handleRemoveAvatar() {
-            // this.dialogImageUrlAvatar = {
-            //     picFUn: 0,
-            //     picUrl: ''
-            // }
-        },
-        async handleUploadAvatarImage(files) {
-            const formData = new FormData()
-            formData.append('file', files.file)
-            const response = await this.$api.UploadFile(formData)
-            this.dialogImageUrlAvatar = Object.assign({}, this.dialogImageUrlAvatar, { picUrl: response.data })
-        },
-        // 缩略图上传 -- 结束
         // 规格属性 -- 开始
         // handleChange(ids) {
         //     console.log(ids, '<<<<<')
@@ -337,10 +291,12 @@ export default {
             filesList.map(item => {
                 item.picUrl = item.url
             })
+            console.log(dialogImageUrlAvatar)
+            return
             const pics = [...filesList, dialogImageUrlAvatar]
 
             // 这里做规格处理
-            const specs = goodsCheckedProperty
+            const specPropertyIds = goodsCheckedProperty
             // Array.isArray(shopSpecList) && shopSpecList.forEach(item => {
             //     Array.isArray(goodsCheckedProperty) && goodsCheckedProperty.forEach(id => {
             //         Array.isArray(item.childrens) && item.childrens.forEach(property => {
@@ -352,15 +308,28 @@ export default {
             // })
 
             // 组装数据
-            const params = Object.assign(defaultData, { specs, pics })
+            const params = Object.assign(defaultData, { specPropertyIds, pics })
 
             await this.$api.AddGoods(params)
             this.$notify({ title: '添加成功', message: '这是一条成功的提示消息', type: 'success' })
             this.$router.push({ path: '/market/shopGoods' })
+        },
+        // 封面上传的回调函数
+        imageSuccessByCover(arr) {
+            arr.forEach(item => {
+                item.picFUn = 0
+                item.picUrl = item.url
+            })
+            this.dialogImageUrlAvatar = arr
+        },
+        handleDelCaverCallBack(){
+            this.dialogImageUrlAvatar = []
         }
     },
     components: {
-        Tinymce
+        Tinymce,
+        UploadImage,
+        FileList
     }
 }
 </script>
