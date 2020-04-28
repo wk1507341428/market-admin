@@ -206,9 +206,9 @@ export const constantRoutes = [
 ]
 
 const createRouter = () => new Router({
-    mode: 'history', // require service support
-    // base: '/market-admin/',
-    base: process.env.NODE_ENV === 'production' ? '/market-admin/' : '/',
+    // mode: 'history', // require service support
+    // // base: '/market-admin/',
+    // base: process.env.NODE_ENV === 'production' ? '/market-admin/' : '/',
     scrollBehavior: () => ({ y: 0 }),
     routes: constantRoutes
 })
