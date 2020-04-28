@@ -16,7 +16,7 @@
                 <el-tab-pane
                     v-for="(item,i) in tabs"
                     :key="i"
-                    :label="item.spcName"
+                    :label="item.specName"
                     :name="item.id">
                     <!-- 筛选框 -->
                     <div class="filter-container">
@@ -77,6 +77,7 @@ export default {
         },
         // 切换tab栏
         handleClick(tab, event) {
+            console.log(tab, event)
             const specId = this.tabsActivity
             this.GetShopSpecListBySpecId(specId)
         },
@@ -110,7 +111,7 @@ export default {
             const options = {
                 active: '1',
                 propertyName: inputValue,
-                spcName: inputValue,
+                specName: inputValue,
                 specId
             }
             if (!inputValue.trim()) {
@@ -145,7 +146,7 @@ export default {
             const data = {
                 active: '1',
                 merchantId: this.$store.getters.customerId,
-                spcName: value
+                specName: value
             }
             await this.$api.AddShopSpecifications(data)
             this.GetShopSpecifications()

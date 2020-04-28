@@ -1,30 +1,33 @@
 <template>
     <div class="dashboard-container">
-        <div class="dashboard-text">name: {{ name }}</div>
+        <aside>欢迎使用商城管理系统</aside>
+        <panel-group />
     </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-
+import PanelGroup from '@/components/PanelGroup/PanelGroup'
 export default {
-    name: 'Dashboard',
-    computed: {
-        ...mapGetters([
-            'name'
-        ])
+    data() {
+        return {
+
+        }
+    },
+    components: {
+        PanelGroup
     }
 }
 </script>
 
 <style lang="scss" scoped>
 .dashboard {
-  &-container {
-    margin: 30px;
-  }
-  &-text {
-    font-size: 30px;
-    line-height: 46px;
-  }
+    &-container {
+        margin: 30px;
+    }
+}
+aside{
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+    color: #3c763d;
 }
 </style>

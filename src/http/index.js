@@ -80,6 +80,8 @@ export default {
         }).withLoading().exec()
     },
 
+    UploadFileUrl: '/market/mall/file/v1/',
+
     /**
      * @description: 查询商家所有的规格
      * @param {type}

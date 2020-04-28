@@ -2,7 +2,7 @@
     <div :class="{fullscreen:fullscreen}" class="tinymce-container" :style="{width:containerWidth}">
         <textarea :id="tinymceId" class="tinymce-textarea" />
         <div class="editor-custom-btn-container">
-            <editorImage color="#1890ff" class="editor-upload-btn" @successCBK="imageSuccessCBK" />
+            <editorImage :showList="false" color="#1890ff" class="editor-upload-btn" @successCBK="imageSuccessCBK" />
         </div>
     </div>
 </template>
@@ -12,7 +12,7 @@
  * docs:
  * https://panjiachen.github.io/vue-element-admin-site/feature/component/rich-editor.html#tinymce
  */
-import editorImage from './components/EditorImage'
+import editorImage from '../UploadImage/UploadImage'
 import plugins from './plugins'
 import toolbar from './toolbar'
 import load from './dynamicLoadScript'

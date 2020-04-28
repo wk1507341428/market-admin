@@ -43,32 +43,11 @@
                 </el-col>
                 <el-col :span="12"></el-col>
             </el-row>
-            <el-row>
-                <el-col :span="12">
-                    <el-form-item label="商品描述" prop="productDesc">
-                        <el-input v-model="ruleForm.productDesc"></el-input>
-                    </el-form-item>
-                </el-col>
-                <el-col :span="12"></el-col>
-            </el-row>
             <!-- 轮播图上传 -->
             <el-row>
                 <el-col :span="18">
                     <el-form-item label="轮播图上传">
-                        <el-upload
-                            :drag="true"
-                            action=""
-                            list-type="picture-card"
-                            :file-list="filesList"
-                            :on-success="uploadSuccess"
-                            multiple
-                            :http-request="handleUploadSwiperImage"
-                            :on-remove="handleRemove">
-                            <i class="el-icon-plus"></i>
-                        </el-upload>
-                        <el-dialog :visible.sync="dialogVisible">
-                            <img width="100%" :src="dialogImageUrl" alt="">
-                        </el-dialog>
+                        <UploadImage color="#1890ff" class="editor-upload-btn" @delCallBack="imageSuccessBySwiper" @successCBK="imageSuccessBySwiper" />
                     </el-form-item>
                 </el-col>
                 <el-col :span="6"></el-col>
@@ -77,8 +56,7 @@
             <el-row>
                 <el-col :span="18">
                     <el-form-item label="缩略图上传">
-                        <UploadImage color="#1890ff" class="editor-upload-btn" @successCBK="imageSuccessByCover" />
-                        <FileList style="marginTop:20px" @delCallBack="handleDelCaverCallBack" :filelist="dialogImageUrlAvatar"></FileList>
+                        <UploadImage color="#1890ff" class="editor-upload-btn" @delCallBack="handleDelCaverCallBack" @successCBK="imageSuccessByCover" />
                     </el-form-item>
                 </el-col>
                 <el-col :span="6">
@@ -114,7 +92,7 @@
                 <el-col :span="24">
                     <el-form-item label="产品详情">
                         <tinymce v-model="content" :height="300" />
-                        <div class="editor-content" v-html="content" />
+                        <!-- <div class="editor-content" v-text="content" /> -->
                     </el-form-item>
                 </el-col>
                 <el-col :span="0"></el-col>
@@ -133,7 +111,6 @@
 <script>
 import Tinymce from '@/components/Tinymce'
 import UploadImage from '@/components/UploadImage/UploadImage'
-import FileList from '@/components/UploadImage/fileList'
 export default {
     data() {
         return {
@@ -142,8 +119,7 @@ export default {
                 categoryCode: '',
                 soldPrice: '',
                 price: '', // 商品现价
-                stock: '',
-                productDesc: '' // 商品描述
+                stock: ''
             },
             rules: {
                 productName: [
@@ -160,30 +136,20 @@ export default {
                 ],
                 stock: [
                     { required: true, message: '请输入', trigger: 'blur' }
-                ],
-                productDesc: [
-                    { required: true, message: '请输入', trigger: 'blur' }
                 ]
             },
             categoryList: [], // 分类列表
             dialogImageUrl: '',
             dialogVisible: false,
             pics: [], // 图片都放在这里 这是最后给后端的   图片列表:0:列表页缩略图；1:详情页轮播图；2:详情页详细介绍图片 ,
-            filesList: [
-                { picFUn: 1, url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg' },
-                { picFUn: 1, url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg' }
-            ], // swiper image list
-
-            /** -----详情页详细介绍图 开始------ */
-
-            /** -----详情页详细介绍图 结束------ */
+            swiperFilesList: [], // swiper image list
             // 规格属性 -- 开始
             activeNames: [],
             shopSpecList: [], // 商品规格列表
             goodsCheckedProperty: [], // 商品已经选择的属性
             // 规格属性 -- 结束
-            content: '这个富文本暂时没什么用',
-            dialogImageUrlAvatar: []
+            content: '',
+            dialogImageUrlAvatar: [] // 头像的list
         }
     },
     mounted() {
@@ -214,40 +180,6 @@ export default {
             const { data } = response
             this.categoryList = data
         },
-        handleRemove(file, filesList) {
-            console.log(file)
-            this.filesList = filesList
-        },
-        handlePictureCardPreview(file) {
-            console.log(file, '<<<handlePictureCardPreview<<<')
-            this.dialogImageUrl = file.url
-            this.dialogVisible = true
-        },
-        // 轮播图图片上传
-        async handleUploadSwiperImage(files) {
-            console.log(files, '<<<<<<', this.filesList)
-            const formData = new FormData()
-            formData.append('file', files.file)
-            const response = await this.$api.UploadFile(formData)
-            this.filesList.push({ url: response.data, picFUn: 1 })
-        },
-        uploadSuccess(res, file) {
-            console.log(this.filesList, 'uploadSuccessuploadSuccess', res, file)
-        },
-        // 规格属性 -- 开始
-        // handleChange(ids) {
-        //     console.log(ids, '<<<<<')
-        //     const { shopSpecList } = this.$data
-        //     const filterList = []
-        //     Array.isArray(ids) && ids.map(id => {
-        //         Array.isArray(shopSpecList) && shopSpecList.filter(async item => {
-        //             if (item.id == id && !item.childrens) {
-        //                 const result = await this.$api.GetShopSpecListBySpecId(id)
-        //                 this.$set(item, 'childrens', result.data)
-        //             }
-        //         })
-        //     })
-        // },
         /**
          * @description: 列出规格下面所有的属性
          * @param {type}
@@ -273,14 +205,14 @@ export default {
         },
         // 规格属性 -- 结束
         async handleSubmit() {
-            const { filesList, dialogImageUrlAvatar, goodsCheckedProperty, shopSpecList } = this.$data
-            const { categoryCode, soldPrice, stock, productName, productDesc, price } = this.ruleForm
+            const { swiperFilesList, dialogImageUrlAvatar, goodsCheckedProperty } = this.$data
+            const { categoryCode, soldPrice, stock, productName, price } = this.ruleForm
             // 收集数据阶段
             const defaultData = {
                 productName,
                 active: 1,
                 categoryCode,
-                detailDesc: productDesc,
+                detailDesc: this.content,
                 merchantId: this.$store.getters.customerId,
                 price, // 商品现价
                 soldPrice, // 商品原价
@@ -288,25 +220,13 @@ export default {
                 stock
             }
             // 做图片上传处理
-            filesList.map(item => {
+            swiperFilesList.map(item => {
                 item.picUrl = item.url
             })
-            console.log(dialogImageUrlAvatar)
-            return
-            const pics = [...filesList, dialogImageUrlAvatar]
+            const pics = [...swiperFilesList, ...dialogImageUrlAvatar]
 
             // 这里做规格处理
             const specPropertyIds = goodsCheckedProperty
-            // Array.isArray(shopSpecList) && shopSpecList.forEach(item => {
-            //     Array.isArray(goodsCheckedProperty) && goodsCheckedProperty.forEach(id => {
-            //         Array.isArray(item.childrens) && item.childrens.forEach(property => {
-            //             if (id == property.id) {
-            //                 specs.push(property)
-            //             }
-            //         })
-            //     })
-            // })
-
             // 组装数据
             const params = Object.assign(defaultData, { specPropertyIds, pics })
 
@@ -322,14 +242,20 @@ export default {
             })
             this.dialogImageUrlAvatar = arr
         },
-        handleDelCaverCallBack(){
-            this.dialogImageUrlAvatar = []
+        handleDelCaverCallBack(arr) {
+            this.dialogImageUrlAvatar = arr
+        },
+        imageSuccessBySwiper(list) {
+            list.forEach(item => {
+                item.picFUn = 1
+                item.picUrl = item.url
+            })
+            this.swiperFilesList = list
         }
     },
     components: {
         Tinymce,
-        UploadImage,
-        FileList
+        UploadImage
     }
 }
 </script>

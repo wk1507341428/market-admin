@@ -53,21 +53,7 @@
                 </el-form-item>
                 <el-form-item required label="上传图标" :label-width="formLabelWidth">
                     <!-- 图片上传组件 -->
-                    <el-upload
-                        action="/market/mall/file/v1/"
-                        list-type="picture-card"
-                        :on-remove="handleRemove"
-                        :file-list="form.fileList"
-                        :http-request="httpRequest"
-                        :limit="1"
-                        accept="image"
-                        name="file"
-                        ref="file">
-                        <i slot="default" class="el-icon-plus" />
-                    </el-upload>
-                    <el-dialog :visible.sync="dialogVisible">
-                        <img width="100%" :src="dialogImageUrl" alt>
-                    </el-dialog>
+                    <UploadImage ref="UploadImage" color="#1890ff" class="editor-upload-btn" @delCallBack="imageSuccess" @successCBK="imageSuccess" />
                     <!-- tips -->
                     <i style="color: #909399;">建议上传尺寸: 70*70</i>
                 </el-form-item>
@@ -81,6 +67,7 @@
 </template>
 
 <script>
+import UploadImage from '@/components/UploadImage/UploadImage'
 export default {
     name: 'Category',
     data() {
@@ -118,6 +105,9 @@ export default {
     mounted() {
         this.init()
     },
+    components: {
+        UploadImage
+    },
     methods: {
         tableRowClassName({ rowIndex }) {
             if (rowIndex === 1) {
@@ -127,15 +117,18 @@ export default {
             }
             return ''
         },
-        handleRemove(file, fileList) {
-            this.form.fileList = []
+        imageSuccess(arr) {
+            this.form.fileList = arr
         },
-        async httpRequest(info) {
-            const formData = new FormData()
-            formData.append('file', info.file)
-            const response = await this.$api.UploadFile(formData)
-            this.form.fileList.push({ url: response.data })
-        },
+        // handleRemove(file, fileList) {
+        //     this.form.fileList = []
+        // },
+        // async httpRequest(info) {
+        //     const formData = new FormData()
+        //     formData.append('file', info.file)
+        //     const response = await this.$api.UploadFile(formData)
+        //     this.form.fileList.push({ url: response.data })
+        // },
         init() {
             this.GetCategoryList()
         },
@@ -192,7 +185,7 @@ export default {
         // 重制表单
         resetForm() {
             this.dialogFormVisible = false
-            this.$refs.file.clearFiles()
+            this.$refs.UploadImage.RemovePrevFileList()
             this.form.fileList = []
         },
         // 编辑表单
@@ -209,7 +202,7 @@ export default {
                 type: 'warning'
             }).catch(() => {})
             if (!confirm) return
-            const disActive = row.active == 1 ? '0' : '1'
+            const disActive = row.active === 1 ? '0' : '1'
             const response = await this.$api.SetCategory(Object.assign(row, { active: disActive }))
             this.$notify({ title: '删除成功', message: response.errMessage || '这是一条成功的提示消息', type: 'success' })
             // 重新请求列表
