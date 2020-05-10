@@ -60,16 +60,21 @@ export default {
         limit: {
             type: Number,
             default: 1
+        },
+        defaultList: {
+            type: Array,
+            default: () => []
         }
     },
     data() {
         const UploadFileUrl = this.$api.UploadFileUrl
+        let defaultList = this.defaultList
         return {
             dialogVisible: false,
             listObj: {},
-            fileList: [],
+            fileList: defaultList,
             UploadFileUrl,
-            prevFileList: [] // 外面预览的时候的列表
+            prevFileList: defaultList // 外面预览的时候的列表
         }
     },
     methods: {

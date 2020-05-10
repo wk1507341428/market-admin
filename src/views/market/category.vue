@@ -29,7 +29,7 @@
             </el-table>
         </div>
         <!-- 弹窗提示 -->
-        <el-dialog :title="form.ifEdit ? '编辑分类' : '新增分类'" :visible.sync="dialogFormVisible">
+        <el-dialog :title="form.ifEdit ? '编辑分类' : '新增分类'" :visible.sync="dialogFormVisible" v-if="dialogFormVisible">
             <el-form ref="ruleForm" :rules="rules" :model="form">
                 <!-- 分类名称 -->
                 <el-form-item required label="分类名称" :label-width="formLabelWidth" prop="categoryName">
@@ -53,7 +53,7 @@
                 </el-form-item>
                 <el-form-item required label="上传图标" :label-width="formLabelWidth">
                     <!-- 图片上传组件 -->
-                    <UploadImage ref="UploadImage" color="#1890ff" class="editor-upload-btn" @delCallBack="imageSuccess" @successCBK="imageSuccess" />
+                    <UploadImage :defaultList="form.fileList" ref="UploadImage" color="#1890ff" class="editor-upload-btn" @delCallBack="imageSuccess" @successCBK="imageSuccess" />
                     <!-- tips -->
                     <i style="color: #909399;">建议上传尺寸: 70*70</i>
                 </el-form-item>
@@ -99,6 +99,7 @@ export default {
     },
     watch: {
         dialogFormVisible() {
+            console.log(this.$refs['ruleForm'],"<<<<")
             this.$refs['ruleForm'] && this.$refs['ruleForm'].resetFields()
         }
     },
@@ -119,6 +120,7 @@ export default {
         },
         imageSuccess(arr) {
             this.form.fileList = arr
+            console.log(arr,"<arr")
         },
         // handleRemove(file, fileList) {
         //     this.form.fileList = []
@@ -184,7 +186,9 @@ export default {
         },
         // 重制表单
         resetForm() {
+
             this.dialogFormVisible = false
+            // this.$refs[formName].resetFields();
             this.$refs.UploadImage.RemovePrevFileList()
             this.form.fileList = []
         },

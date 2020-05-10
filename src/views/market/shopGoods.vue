@@ -33,6 +33,7 @@
                 <el-table-column prop="state" label="操作">
                     <template slot-scope="scope">
                         <el-button class="red" @click="DeleteDoods(scope.row)" type="text">删除</el-button>
+                        <el-button @click="EditDoods(scope.row)" type="text">编辑</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -92,6 +93,9 @@ export default {
                 id: goods.id
             })
             this.GetGoodsByCategory()
+        },
+        EditDoods({ productCode }) {
+            this.$router.push({ path: '/market/setShopGoods', query: { productCode }})
         }
     }
 }

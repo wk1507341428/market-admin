@@ -47,7 +47,7 @@
             <el-row>
                 <el-col :span="18">
                     <el-form-item label="轮播图上传">
-                        <UploadImage color="#1890ff" class="editor-upload-btn" @delCallBack="imageSuccessBySwiper" @successCBK="imageSuccessBySwiper" />
+                        <UploadImage :defaultList='swiperFilesList' color="#1890ff" class="editor-upload-btn" :limit="3" @delCallBack="imageSuccessBySwiper" @successCBK="imageSuccessBySwiper" />
                     </el-form-item>
                 </el-col>
                 <el-col :span="6"></el-col>
@@ -56,7 +56,7 @@
             <el-row>
                 <el-col :span="18">
                     <el-form-item label="缩略图上传">
-                        <UploadImage color="#1890ff" class="editor-upload-btn" @delCallBack="handleDelCaverCallBack" @successCBK="imageSuccessByCover" />
+                        <UploadImage :defaultList="dialogImageUrlAvatar" color="#1890ff" class="editor-upload-btn" @delCallBack="handleDelCaverCallBack" @successCBK="imageSuccessByCover" />
                     </el-form-item>
                 </el-col>
                 <el-col :span="6">
@@ -92,7 +92,6 @@
                 <el-col :span="24">
                     <el-form-item label="产品详情">
                         <tinymce v-model="content" :height="300" />
-                        <!-- <div class="editor-content" v-text="content" /> -->
                     </el-form-item>
                 </el-col>
                 <el-col :span="0"></el-col>
@@ -161,15 +160,33 @@ export default {
     methods: {
         init() {
             this.GetCategoryList()
+            this.GetProductDetail()
         },
-        submitForm(formName) {
-            this.$refs[formName].validate((valid) => {
-                if (valid) {
-                    alert('submit!')
-                } else {
-                    console.log('error submit!!')
-                    return false
-                }
+        // 获取商品详情-编辑用
+        async GetProductDetail(){
+            const { productCode } = this.$route.query
+            if(!productCode) return
+            const { data } = await this.$api.GetProductDetail(productCode)
+
+            this.ruleForm = Object.assign(this.ruleForm,{
+                productName: data.productName,
+                categoryCode: data.categoryCode,
+                soldPrice: data.soldPrice,
+                price: data.price,
+                stock: data.stock
+            })
+
+            this.content = data.detailDesc
+            Array.isArray(data.specDTOS) && data.specDTOS.map(item => {
+                Array.isArray(item.properties) && item.properties.map(info=>{
+                    this.goodsCheckedProperty.push(info.id)
+                })
+            })
+
+            this.dialogImageUrlAvatar.push({ picUrl:data.pic, url: data.pic })
+
+            Array.isArray(data.pics) && data.pics.map(item=>{
+                item.picFUn == '1' && this.swiperFilesList.push({ picUrl:item.picUrl, url: item.picUrl })
             })
         },
         resetForm(formName) {
@@ -230,9 +247,17 @@ export default {
             // 组装数据
             const params = Object.assign(defaultData, { specPropertyIds, pics })
 
-            await this.$api.AddGoods(params)
-            this.$notify({ title: '添加成功', message: '这是一条成功的提示消息', type: 'success' })
-            this.$router.push({ path: '/market/shopGoods' })
+            const { productCode } = this.$route.query
+            if(!productCode) {
+                await this.$api.AddGoods(params)
+                this.$notify({ title: '添加成功', message: '添加成功', type: 'success' })
+                this.$router.push({ path: '/market/shopGoods' })
+            }else{
+                await this.$api.SetGoods(params)
+                this.$notify({ title: '修改成功', message: '修改成功', type: 'success' })
+                this.$router.push({ path: '/market/shopGoods' })
+            }
+
         },
         // 封面上传的回调函数
         imageSuccessByCover(arr) {
