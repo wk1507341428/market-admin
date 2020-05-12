@@ -23,7 +23,13 @@
         <div class="table-wrapper">
             <el-table height="80vh" :data="tableData" style="width: 100%">
                 <el-table-column prop="productName" label="商品名称" />
-                <el-table-column prop="price" label="商品价格" />
+                <el-table-column prop="price" label="商品现价" />
+                <el-table-column prop="stock" label="商品库存" />
+                <el-table-column prop="pic" label="缩略图">
+                    <template slot-scope="scope">
+                        <img width="120" height="120" :src="scope.row.pic" alt="">
+                    </template>
+                </el-table-column>
                 <el-table-column label="状态">
                     <template>
                         <el-tag type="success">启用</el-tag>

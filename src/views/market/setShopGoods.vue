@@ -148,7 +148,8 @@ export default {
             goodsCheckedProperty: [], // 商品已经选择的属性
             // 规格属性 -- 结束
             content: '',
-            dialogImageUrlAvatar: [] // 头像的list
+            dialogImageUrlAvatar: [], // 头像的list
+            id: null // 编辑的时候用得到
         }
     },
     mounted() {
@@ -163,12 +164,14 @@ export default {
             this.GetProductDetail()
         },
         // 获取商品详情-编辑用
-        async GetProductDetail(){
+        async GetProductDetail() {
             const { productCode } = this.$route.query
-            if(!productCode) return
+            if (!productCode) return
             const { data } = await this.$api.GetProductDetail(productCode)
 
-            this.ruleForm = Object.assign(this.ruleForm,{
+            this.id = data.id
+
+            this.ruleForm = Object.assign(this.ruleForm, {
                 productName: data.productName,
                 categoryCode: data.categoryCode,
                 soldPrice: data.soldPrice,
@@ -178,23 +181,22 @@ export default {
 
             this.content = data.detailDesc
             Array.isArray(data.specDTOS) && data.specDTOS.map(item => {
-                Array.isArray(item.properties) && item.properties.map(info=>{
+                Array.isArray(item.properties) && item.properties.map(info => {
                     this.goodsCheckedProperty.push(info.id)
                 })
             })
 
-            this.dialogImageUrlAvatar.push({ picUrl:data.pic, url: data.pic })
+            this.dialogImageUrlAvatar.push({ picUrl: data.pic, url: data.pic })
 
-            Array.isArray(data.pics) && data.pics.map(item=>{
-                item.picFUn == '1' && this.swiperFilesList.push({ picUrl:item.picUrl, url: item.picUrl })
+            Array.isArray(data.pics) && data.pics.map(item => {
+                item.picFUn == '1' && this.swiperFilesList.push({ picUrl: item.picUrl, url: item.picUrl, id: item.id })
             })
         },
         resetForm(formName) {
             this.$refs[formName].resetFields()
         },
         async GetCategoryList() {
-            const response = await this.$api.GetCategoryList()
-            const { data } = response
+            const { data } = await this.$api.GetCategoryList()
             this.categoryList = data
         },
         /**
@@ -222,7 +224,7 @@ export default {
         },
         // 规格属性 -- 结束
         async handleSubmit() {
-            const { swiperFilesList, dialogImageUrlAvatar, goodsCheckedProperty } = this.$data
+            const { swiperFilesList, dialogImageUrlAvatar, goodsCheckedProperty, id } = this.$data
             const { categoryCode, soldPrice, stock, productName, price } = this.ruleForm
             // 收集数据阶段
             const defaultData = {
@@ -248,16 +250,15 @@ export default {
             const params = Object.assign(defaultData, { specPropertyIds, pics })
 
             const { productCode } = this.$route.query
-            if(!productCode) {
+            if (!productCode) {
                 await this.$api.AddGoods(params)
                 this.$notify({ title: '添加成功', message: '添加成功', type: 'success' })
                 this.$router.push({ path: '/market/shopGoods' })
-            }else{
-                await this.$api.SetGoods(params)
+            } else {
+                await this.$api.SetGoods({ ...params, productCode, id })
                 this.$notify({ title: '修改成功', message: '修改成功', type: 'success' })
                 this.$router.push({ path: '/market/shopGoods' })
             }
-
         },
         // 封面上传的回调函数
         imageSuccessByCover(arr) {

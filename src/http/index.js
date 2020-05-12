@@ -232,18 +232,18 @@ export default {
 
     /**
      * @description: 获取商品详情
-     * @param {type} 
-     * @return: 
-     */    
-    GetProductDetail(productCode){
+     * @param {type}
+     * @return:
+     */
+    GetProductDetail(productCode) {
         return http.get(`/market/mall/product/v1/product/${productCode}`).withLoading().exec()
     },
 
     /**
      * @description: 修改商品
-     * @param {type} 
-     * @return: 
-     */    
+     * @param {type}
+     * @return:
+     */
     SetGoods(data) {
         return http.post(`/market/mall/product/v1/product/update`, data).withLoading().exec()
     }

@@ -68,7 +68,7 @@ export default {
     },
     data() {
         const UploadFileUrl = this.$api.UploadFileUrl
-        let defaultList = this.defaultList
+        const defaultList = this.defaultList
         return {
             dialogVisible: false,
             listObj: {},

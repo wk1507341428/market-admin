@@ -99,7 +99,7 @@ export default {
     },
     watch: {
         dialogFormVisible() {
-            console.log(this.$refs['ruleForm'],"<<<<")
+            console.log(this.$refs['ruleForm'], '<<<<')
             this.$refs['ruleForm'] && this.$refs['ruleForm'].resetFields()
         }
     },
@@ -120,7 +120,7 @@ export default {
         },
         imageSuccess(arr) {
             this.form.fileList = arr
-            console.log(arr,"<arr")
+            console.log(arr, '<arr')
         },
         // handleRemove(file, fileList) {
         //     this.form.fileList = []
@@ -186,7 +186,6 @@ export default {
         },
         // 重制表单
         resetForm() {
-
             this.dialogFormVisible = false
             // this.$refs[formName].resetFields();
             this.$refs.UploadImage.RemovePrevFileList()
